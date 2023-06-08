@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Temporal\OpenTelemetry;
 
 use OpenTelemetry\API\Trace\SpanKind;
-use OpenTelemetry\Context\Propagation\TextMapPropagatorInterface;
 use Temporal\DataConverter\DataConverterInterface;
 use Temporal\Interceptor\Trait\WorkflowClientCallsInterceptorTrait;
 use Temporal\Interceptor\WorkflowClient\SignalWithStartInput;
@@ -17,13 +16,10 @@ final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClien
 {
     use WorkflowClientCallsInterceptorTrait, TracerContext;
 
-    private readonly TextMapPropagatorInterface $propagator;
-
     public function __construct(
         private readonly Tracer $tracer,
         private readonly DataConverterInterface $converter,
     ) {
-        $this->propagator = $tracer->getPropagator();
     }
 
     /**
@@ -31,7 +27,13 @@ final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClien
      */
     public function start(StartInput $input, callable $next): WorkflowExecution
     {
-        return $this->getTracerWithContext($input->header)->trace(
+        $tracer = $this->getTracerWithContext($input->header);
+
+        if ($tracer === null) {
+            return $next($input);
+        }
+
+        return $tracer->trace(
             name: 'temporal.workflow.start',
             callback: fn(): mixed => $next(
                 $input->with(
@@ -51,9 +53,14 @@ final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClien
     {
         $startInput = $input->workflowStartInput;
 
-        return $this->getTracerWithContext($startInput->header)->trace(
+        $tracer = $this->getTracerWithContext($startInput->header);
+        if ($tracer === null) {
+            return $next($input);
+        }
+
+        return $tracer->trace(
             name: 'temporal.workflow.start_with_signal',
-            callback: static fn(): mixed => $next(
+            callback: fn(): mixed => $next(
                 $input->with(
                     workflowStartInput: $startInput->with(
                         header: $this->setContext($startInput->header, $this->tracer->getContext()),

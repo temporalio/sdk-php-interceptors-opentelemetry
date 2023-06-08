@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Temporal\OpenTelemetry;
 
 use OpenTelemetry\API\Trace\SpanKind;
-use OpenTelemetry\Context\Propagation\TextMapPropagatorInterface;
 use OpenTelemetry\SDK\Common\Time\ClockFactory;
 use React\Promise\PromiseInterface;
 use Temporal\DataConverter\DataConverterInterface;
@@ -17,13 +16,10 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptor implements WorkflowO
 {
     use TracerContext;
 
-    private readonly TextMapPropagatorInterface $propagator;
-
     public function __construct(
         private readonly Tracer $tracer,
         private readonly DataConverterInterface $converter,
     ) {
-        $this->propagator = $tracer->getPropagator();
     }
 
     /**
@@ -43,7 +39,7 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptor implements WorkflowO
         /** @var PromiseInterface $result */
         $result = $next($request);
 
-        $trace = static fn() => $tracer->trace(
+        $trace = static fn(): mixed => $tracer->trace(
             name: 'temporal.workflow.outbound.request.' . $request->getName(),
             callback: static fn(): mixed => null,
             attributes: [

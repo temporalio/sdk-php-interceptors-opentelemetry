@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Temporal\OpenTelemetry;
 
 use OpenTelemetry\API\Trace\SpanKind;
-use OpenTelemetry\Context\Propagation\TextMapPropagatorInterface;
 use Temporal\Activity;
 use Temporal\DataConverter\DataConverterInterface;
 use Temporal\Interceptor\ActivityInbound\ActivityInput;
@@ -16,13 +15,10 @@ final class OpenTelemetryActivityInboundInterceptor implements ActivityInboundIn
 {
     use ActivityInboundInterceptorTrait, TracerContext;
 
-    private readonly TextMapPropagatorInterface $propagator;
-
     public function __construct(
         private readonly Tracer $tracer,
         private readonly DataConverterInterface $converter,
     ) {
-        $this->propagator = $tracer->getPropagator();
     }
 
     /**
@@ -43,7 +39,7 @@ final class OpenTelemetryActivityInboundInterceptor implements ActivityInboundIn
                 'activity.attempt' => Activity::getInfo()->attempt,
                 'activity.type' => Activity::getInfo()->type->name,
                 'activity.task_queue' => Activity::getInfo()->taskQueue,
-                'activity.workflow_type' => Activity::getInfo()->workflowType->name,
+                'activity.workflow_type' => Activity::getInfo()->workflowType?->name,
                 'activity.workflow_namespace' => Activity::getInfo()->workflowNamespace,
                 'activity.header' => \iterator_to_array($input->header->getIterator()),
             ],

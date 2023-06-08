@@ -17,9 +17,9 @@ trait TracerContext
 
     private function getTracerWithContext(HeaderInterface $header): ?Tracer
     {
-        /** @var Payload|null $tracerData */
         $tracerData = null;
         if ($header->toHeader()->getFields()->offsetExists($this->getTracerHeader())) {
+            /** @var Payload $tracerData */
             $tracerData = $header->toHeader()->getFields()->offsetGet($this->getTracerHeader());
         }
 
