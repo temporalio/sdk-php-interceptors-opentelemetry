@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Temporal\OpenTelemetry;
 
 use OpenTelemetry\API\Trace\SpanKind;
-use Temporal\DataConverter\DataConverterInterface;
 use Temporal\Interceptor\Trait\WorkflowClientCallsInterceptorTrait;
 use Temporal\Interceptor\WorkflowClient\SignalWithStartInput;
 use Temporal\Interceptor\WorkflowClient\StartInput;
@@ -17,8 +16,7 @@ final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClien
     use WorkflowClientCallsInterceptorTrait, TracerContext;
 
     public function __construct(
-        private readonly Tracer $tracer,
-        private readonly DataConverterInterface $converter,
+        private readonly Tracer $tracer
     ) {
     }
 

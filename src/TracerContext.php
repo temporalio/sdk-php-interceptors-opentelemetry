@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Temporal\OpenTelemetry;
 
-use Temporal\Api\Common\V1\Payload;
-use Temporal\Interceptor\Header;
 use Temporal\Interceptor\HeaderInterface;
 
 trait TracerContext
@@ -17,27 +15,13 @@ trait TracerContext
 
     private function getTracerWithContext(HeaderInterface $header): ?Tracer
     {
-        $tracerData = null;
-        if ($header->toHeader()->getFields()->offsetExists($this->getTracerHeader())) {
-            /** @var Payload $tracerData */
-            $tracerData = $header->toHeader()->getFields()->offsetGet($this->getTracerHeader());
-        }
+        $tracerData = $header->getValue($this->getTracerHeader(), 'array');
 
-        if ($tracerData === null) {
-            return $this->tracer;
-        }
-
-        return $this->tracer->fromContext($this->converter->fromPayload($tracerData, 'array'));
+        return $tracerData === null ? $this->tracer : $this->tracer->fromContext($tracerData);
     }
 
     private function setContext(HeaderInterface $header, array $context): HeaderInterface
     {
-        $payloads = $header->toHeader()->getFields();
-
-        $payload = $this->converter->toPayload((object)$context);
-
-        $payloads[$this->getTracerHeader()] = $payload;
-
-        return Header::fromPayloadCollection($payloads);
+        return $header->withValue($this->getTracerHeader(), (object)$context);
     }
 }

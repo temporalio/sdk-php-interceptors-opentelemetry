@@ -6,7 +6,6 @@ namespace Temporal\OpenTelemetry;
 
 use OpenTelemetry\API\Trace\SpanKind;
 use Temporal\Activity;
-use Temporal\DataConverter\DataConverterInterface;
 use Temporal\Interceptor\ActivityInbound\ActivityInput;
 use Temporal\Interceptor\ActivityInboundInterceptor;
 use Temporal\Interceptor\Trait\ActivityInboundInterceptorTrait;
@@ -16,8 +15,7 @@ final class OpenTelemetryActivityInboundInterceptor implements ActivityInboundIn
     use ActivityInboundInterceptorTrait, TracerContext;
 
     public function __construct(
-        private readonly Tracer $tracer,
-        private readonly DataConverterInterface $converter,
+        private readonly Tracer $tracer
     ) {
     }
 

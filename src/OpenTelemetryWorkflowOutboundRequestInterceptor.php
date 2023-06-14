@@ -7,7 +7,6 @@ namespace Temporal\OpenTelemetry;
 use OpenTelemetry\API\Trace\SpanKind;
 use OpenTelemetry\SDK\Common\Time\ClockFactory;
 use React\Promise\PromiseInterface;
-use Temporal\DataConverter\DataConverterInterface;
 use Temporal\Interceptor\WorkflowOutboundRequestInterceptor;
 use Temporal\Worker\Transport\Command\RequestInterface;
 use Temporal\Workflow;
@@ -17,8 +16,7 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptor implements WorkflowO
     use TracerContext;
 
     public function __construct(
-        private readonly Tracer $tracer,
-        private readonly DataConverterInterface $converter,
+        private readonly Tracer $tracer
     ) {
     }
 
