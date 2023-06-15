@@ -41,7 +41,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Temporal\\OpenTelemetry\\Tests\\": "tests"
+            "Temporal\\OpenTelemetry\\Tests\\": "tests\\src"
         }
     },
     "config": {

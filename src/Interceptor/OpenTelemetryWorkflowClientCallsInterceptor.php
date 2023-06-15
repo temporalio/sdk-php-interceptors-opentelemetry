@@ -2,13 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Temporal\OpenTelemetry;
+namespace Temporal\OpenTelemetry\Interceptor;
 
 use OpenTelemetry\API\Trace\SpanKind;
 use Temporal\Interceptor\Trait\WorkflowClientCallsInterceptorTrait;
 use Temporal\Interceptor\WorkflowClient\SignalWithStartInput;
 use Temporal\Interceptor\WorkflowClient\StartInput;
 use Temporal\Interceptor\WorkflowClientCallsInterceptor;
+use Temporal\OpenTelemetry\Enum\SpanName;
+use Temporal\OpenTelemetry\Enum\WorkflowAttribute;
+use Temporal\OpenTelemetry\Tracer;
+use Temporal\OpenTelemetry\TracerContext;
 use Temporal\Workflow\WorkflowExecution;
 
 final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClientCallsInterceptor
@@ -32,7 +36,7 @@ final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClien
         }
 
         return $tracer->trace(
-            name: 'temporal.workflow.start',
+            name: SpanName::StartWorkflow->value . SpanName::SpanDelimiter->value . $input->workflowType,
             callback: fn(): mixed => $next(
                 $input->with(
                     header: $this->setContext($input->header, $this->tracer->getContext()),
@@ -57,7 +61,7 @@ final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClien
         }
 
         return $tracer->trace(
-            name: 'temporal.workflow.start_with_signal',
+            name: SpanName::SignalWithStartWorkflow->value . SpanName::SpanDelimiter->value . $startInput->workflowType,
             callback: fn(): mixed => $next(
                 $input->with(
                     workflowStartInput: $startInput->with(
@@ -74,9 +78,9 @@ final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClien
     private function buildWorkflowAttributes(StartInput $input): array
     {
         return [
-            'workflow.type' => $input->workflowType,
-            'workflow.run_id' => $input->workflowId,
-            'workflow.header' => \iterator_to_array($input->header->getIterator()),
+            WorkflowAttribute::Type->value => $input->workflowType,
+            WorkflowAttribute::RunId->value => $input->workflowId,
+            WorkflowAttribute::Header->value => \iterator_to_array($input->header->getIterator()),
         ];
     }
 }

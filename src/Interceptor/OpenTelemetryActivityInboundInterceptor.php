@@ -2,13 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Temporal\OpenTelemetry;
+namespace Temporal\OpenTelemetry\Interceptor;
 
 use OpenTelemetry\API\Trace\SpanKind;
 use Temporal\Activity;
 use Temporal\Interceptor\ActivityInbound\ActivityInput;
 use Temporal\Interceptor\ActivityInboundInterceptor;
 use Temporal\Interceptor\Trait\ActivityInboundInterceptorTrait;
+use Temporal\OpenTelemetry\Enum\ActivityAttribute;
+use Temporal\OpenTelemetry\Enum\SpanName;
+use Temporal\OpenTelemetry\Tracer;
+use Temporal\OpenTelemetry\TracerContext;
 
 final class OpenTelemetryActivityInboundInterceptor implements ActivityInboundInterceptor
 {
@@ -30,16 +34,16 @@ final class OpenTelemetryActivityInboundInterceptor implements ActivityInboundIn
         }
 
         return $tracer->trace(
-            name: 'temporal.activity.handle',
+            name: SpanName::ActivityHandle->value,
             callback: static fn(): mixed => $next($input),
             attributes: [
-                'activity.id' => Activity::getInfo()->id,
-                'activity.attempt' => Activity::getInfo()->attempt,
-                'activity.type' => Activity::getInfo()->type->name,
-                'activity.task_queue' => Activity::getInfo()->taskQueue,
-                'activity.workflow_type' => Activity::getInfo()->workflowType?->name,
-                'activity.workflow_namespace' => Activity::getInfo()->workflowNamespace,
-                'activity.header' => \iterator_to_array($input->header->getIterator()),
+                ActivityAttribute::Id->value => Activity::getInfo()->id,
+                ActivityAttribute::Attempt->value => Activity::getInfo()->attempt,
+                ActivityAttribute::Type->value => Activity::getInfo()->type->name,
+                ActivityAttribute::TaskQueue->value => Activity::getInfo()->taskQueue,
+                ActivityAttribute::WorkflowType->value => Activity::getInfo()->workflowType?->name,
+                ActivityAttribute::WorkflowNamespace->value => Activity::getInfo()->workflowNamespace,
+                ActivityAttribute::Header->value => \iterator_to_array($input->header->getIterator()),
             ],
             scoped: true,
             spanKind: SpanKind::KIND_SERVER,
