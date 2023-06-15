@@ -6,9 +6,9 @@ namespace Temporal\OpenTelemetry\Enum;
 
 enum SpanName: string
 {
-    case ActivityHandle = 'temporal.activity.handle';
+    case ActivityHandle = 'RunActivity';
     case StartWorkflow = 'StartWorkflow';
     case SignalWithStartWorkflow = 'SignalWithStartWorkflow';
-    case WorkflowOutboundRequest = 'temporal.workflow.outbound.request';
+    case WorkflowOutboundRequest = 'WorkflowOutboundRequest';
     case SpanDelimiter = ':';
 }

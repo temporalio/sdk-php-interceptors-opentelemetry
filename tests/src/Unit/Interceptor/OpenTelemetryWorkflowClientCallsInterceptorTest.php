@@ -51,7 +51,7 @@ final class OpenTelemetryWorkflowClientCallsInterceptorTest extends TestCase
             ],
             scoped: true,
             spanKind: SpanKind::KIND_CLIENT,
-            name: SpanName::StartWorkflow->value
+            name: SpanName::StartWorkflow->value . SpanName::SpanDelimiter->value . 'someType'
         );
 
         $interceptor = new OpenTelemetryWorkflowClientCallsInterceptor($tracer);
