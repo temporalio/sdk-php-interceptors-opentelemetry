@@ -25,8 +25,6 @@
     },
     "require": {
         "php": ">=8.1",
-        "guzzlehttp/promises": "^2.0",
-        "nyholm/psr7": "^1.8",
         "open-telemetry/sdk": "^0.0.17",
         "temporal/sdk": "^2.6"
     },
