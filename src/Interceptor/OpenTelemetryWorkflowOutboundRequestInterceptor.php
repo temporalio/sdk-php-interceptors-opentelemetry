@@ -21,7 +21,7 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptor implements WorkflowO
     use TracerContext;
 
     public function __construct(
-        private readonly Tracer $tracer
+        private readonly Tracer $tracer,
     ) {
     }
 
