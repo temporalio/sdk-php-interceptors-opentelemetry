@@ -33,6 +33,7 @@ final class Tracer
     }
 
     /**
+     * @param non-empty-string $name
      * @psalm-param SpanKind::KIND_* $spanKind
      * @throws \Throwable
      */
@@ -81,6 +82,7 @@ final class Tracer
     }
 
     /**
+     * @param non-empty-string $name
      * @psalm-param SpanKind::KIND_* $spanKind
      */
     private function getTraceSpan(
@@ -88,7 +90,10 @@ final class Tracer
         ?int $spanKind,
         ?int $startTime
     ): SpanInterface {
-        $spanBuilder = $this->tracer->spanBuilder($name)->setSpanKind($spanKind);
+        $spanBuilder = $this->tracer->spanBuilder($name);
+        if ($spanKind !== null) {
+            $spanBuilder->setSpanKind($spanKind);
+        }
 
         if ($startTime !== null) {
             $spanBuilder->setStartTimestamp($startTime);
