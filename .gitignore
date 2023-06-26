@@ -13,6 +13,7 @@ Thumbs.db
 
 # Cache
 .phpunit.result.cache
+.phpunit.cache/
 .php_cs.cache
 
 # Other
@@ -20,3 +21,4 @@ Thumbs.db
 rr
 .rr.yaml
 temporal-test-server
+build
