@@ -6,11 +6,11 @@ namespace Temporal\OpenTelemetry\Enum;
 
 enum ActivityAttribute: string
 {
-    case Id = 'activity.id';
-    case Attempt ='activity.attempt';
-    case Type = 'activity.type';
-    case TaskQueue = 'activity.task_queue';
-    case WorkflowType = 'activity.workflow_type';
-    case WorkflowNamespace = 'activity.workflow_namespace';
-    case Header = 'activity.header';
+    case Id = 'id';
+    case Attempt ='attempt';
+    case Type = 'activity_type';
+    case TaskQueue = 'task_queue';
+    case WorkflowType = 'workflow_type';
+    case WorkflowNamespace = 'workflow_namespace';
+    case Header = 'header';
 }

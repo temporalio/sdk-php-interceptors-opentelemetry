@@ -6,7 +6,7 @@ namespace Temporal\OpenTelemetry\Enum;
 
 enum WorkflowAttribute: string
 {
-    case Type = 'workflow.type';
-    case RunId = 'workflow.run_id';
-    case Header = 'workflow.header';
+    case Type = 'workflow_type';
+    case RunId = 'run_id';
+    case Header = 'header';
 }

@@ -6,7 +6,7 @@ namespace Temporal\OpenTelemetry\Enum;
 
 enum RequestAttribute: string
 {
-    case Type = 'request.type';
-    case Name = 'request.name';
-    case Id = 'request.id';
+    case Type = 'type';
+    case Name = 'name';
+    case Id = 'id';
 }
