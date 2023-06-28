@@ -10,6 +10,9 @@ These interceptors allow you to capture and trace various actions and events, su
 sending signals to workflows, and executing workflow events. By integrating OpenTelemetry tracing, you gain visibility
 into the behavior and performance of your Temporal applications.
 
+<img width="1511" alt="otel" src="https://github.com/msmakouz/sdk-php-interceptors-opentelemetry/assets/67324318/96b3e7cf-a815-47bd-b09a-00214ea2381d">
+
+
 ## Installation
 
 To install the package, run the following command using Composer:
