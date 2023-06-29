@@ -12,7 +12,6 @@ into the behavior and performance of your Temporal applications.
 
 <img width="1511" alt="otel" src="https://github.com/temporalio/sdk-php-interceptors-opentelemetry/assets/67324318/615dd335-39df-4526-af71-7f422e39bfa9">
 
-
 ## Installation
 
 To install the package, run the following command using Composer:
