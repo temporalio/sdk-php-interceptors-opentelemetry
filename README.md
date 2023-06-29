@@ -10,6 +10,8 @@ These interceptors allow you to capture and trace various actions and events, su
 sending signals to workflows, and executing workflow events. By integrating OpenTelemetry tracing, you gain visibility
 into the behavior and performance of your Temporal applications.
 
+<img width="1511" alt="otel" src="https://github.com/temporalio/sdk-php-interceptors-opentelemetry/assets/67324318/615dd335-39df-4526-af71-7f422e39bfa9">
+
 ## Installation
 
 To install the package, run the following command using Composer:
@@ -28,9 +30,8 @@ The following example shows how to create a pipeline provider with the `OpenTele
 
 ```php
 use OpenTelemetry\SDK\Trace;
-use Temporal\OpenTelemetry\OpenTelemetryActivityInboundInterceptor;
+use Temporal\OpenTelemetry\Interceptor\OpenTelemetryActivityInboundInterceptor;
 use Temporal\Interceptor\SimplePipelineProvider;
-use Temporal\DataConverter\DataConverter;
 
 $spanProcessor = (new Trace\SpanProcessorFactory())->create(
     (new Trace\ExporterFactory())->create();
@@ -44,11 +45,7 @@ $tracer = new Temporal\OpenTelemetry\Tracer(
     $propagator
 );
 
-$dataConverter = DataConverter::createDefault();
-
-$activityInterceptor =  new OpenTelemetryActivityInboundInterceptor(
-    $tracer, $dataConverter
-);
+$activityInterceptor =  new OpenTelemetryActivityInboundInterceptor($tracer);
 
 $provider = new SimplePipelineProvider([
      $activityInterceptor
@@ -86,31 +83,31 @@ The package provides three types of interceptors:
 
 ### OpenTelemetryActivityInboundInterceptor
 
-`Temporal\OpenTelemetry\OpenTelemetryActivityInboundInterceptor` traces the handling of activities
+`Temporal\OpenTelemetry\Interceptor\OpenTelemetryActivityInboundInterceptor` traces the handling of activities
 within workflows.
 
 It captures and traces the following spans:
 
-- `temporal.activity.handle`: Spans created when handling an activity.
+- `RunActivity`: Spans created when handling an activity.
 
 ### OpenTelemetryWorkflowClientCallsInterceptor
 
-`Temporal\OpenTelemetry\OpenTelemetryWorkflowClientCallsInterceptor` traces the starting and signaling of workflows from
+`Temporal\OpenTelemetry\Interceptor\OpenTelemetryWorkflowClientCallsInterceptor` traces the starting and signaling of workflows from
 the client side. It captures spans with the names
 
-- `temporal.workflow.start`
-- `temporal.workflow.start_with_signal`.
+- `StartWorkflow:<workflow type>`
+- `SignalWithStartWorkflow:<workflow type>`.
 
 These spans provide visibility into the initiation and signaling of workflows.
 
 ### OpenTelemetryWorkflowOutboundRequestInterceptor
 
-`Temporal\OpenTelemetry\OpenTelemetryWorkflowOutboundRequestInterceptor` traces the execution of various workflow
+`Temporal\OpenTelemetry\Interceptor\OpenTelemetryWorkflowOutboundRequestInterceptor` traces the execution of various workflow
 events, including `ExecuteActivity`, `ExecuteLocalActivity`, `ExecuteChildWorkflow`, `ContinueAsNew`, `NewTimer`,
 `CompleteWorkflow`, `SignalExternalWorkflow`, `CancelExternalWorkflow`, `GetVersion`, `Panic`, `SideEffect`,
 `UpsertSearchAttributes`, and `Cancel`.
 
-It captures spans with the name `temporal.workflow.outbound.request.<event>`, providing detailed information
+It captures spans with the name `WorkflowOutboundRequest:<event>`, providing detailed information
 about outbound event requests.
 
 ## Available interceptor interfaces
