@@ -31,10 +31,6 @@ final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClien
     {
         $tracer = $this->getTracerWithContext($input->header);
 
-        if ($tracer === null) {
-            return $next($input);
-        }
-
         return $tracer->trace(
             name: SpanName::StartWorkflow->value . SpanName::SpanDelimiter->value . $input->workflowType,
             callback: fn(): mixed => $next(
@@ -56,9 +52,6 @@ final class OpenTelemetryWorkflowClientCallsInterceptor implements WorkflowClien
         $startInput = $input->workflowStartInput;
 
         $tracer = $this->getTracerWithContext($startInput->header);
-        if ($tracer === null) {
-            return $next($input);
-        }
 
         return $tracer->trace(
             name: SpanName::SignalWithStartWorkflow->value . SpanName::SpanDelimiter->value . $startInput->workflowType,

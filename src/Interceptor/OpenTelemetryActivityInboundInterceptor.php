@@ -29,9 +29,6 @@ final class OpenTelemetryActivityInboundInterceptor implements ActivityInboundIn
     public function handleActivityInbound(ActivityInput $input, callable $next): mixed
     {
         $tracer = $this->getTracerWithContext($input->header);
-        if ($tracer === null) {
-            return $next($input);
-        }
 
         return $tracer->trace(
             name: SpanName::ActivityHandle->value,

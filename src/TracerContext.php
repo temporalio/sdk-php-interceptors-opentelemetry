@@ -13,7 +13,7 @@ trait TracerContext
         return '_tracer-data';
     }
 
-    private function getTracerWithContext(HeaderInterface $header): ?Tracer
+    private function getTracerWithContext(HeaderInterface $header): Tracer
     {
         $tracerData = $header->getValue($this->getTracerHeader(), 'array');
 

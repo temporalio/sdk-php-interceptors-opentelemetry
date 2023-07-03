@@ -34,7 +34,7 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptorTest extends TestCase
         ClockFactory::setDefault($clock);
 
         $info = new WorkflowInfo();
-        $type = $info->type;
+        $info->type->name = 'foo';
 
         $ctx = $this->createMock(WorkflowContextInterface::class);
         $ctx->expects($this->once())->method('getInfo')->willReturn($info);
@@ -45,7 +45,7 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptorTest extends TestCase
                 RequestAttribute::Type->value => Request::class,
                 RequestAttribute::Name->value => 'someRequest',
                 RequestAttribute::Id->value => 987,
-                WorkflowAttribute::Type->value => $type
+                WorkflowAttribute::Type->value => 'foo'
             ],
             scoped: true,
             spanKind: SpanKind::KIND_SERVER,
@@ -55,10 +55,16 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptorTest extends TestCase
 
         $promise = new Promise();
 
+        $header = $this->createMock(HeaderInterface::class);
+        $header
+            ->method('getValue')
+            ->with('_tracer-data')
+            ->willReturn(['some' => 'data']);
+
         $interceptor = new OpenTelemetryWorkflowOutboundRequestInterceptor($tracer);
         $interceptor->handleOutboundRequest(
             new Request(
-                $this->createMock(HeaderInterface::class),
+                $header,
                 $this->createMock(ValuesInterface::class)
             ),
             fn ($receivedRequest): PromiseInterface => $promise
