@@ -30,14 +30,15 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptor implements WorkflowO
      */
     public function handleOutboundRequest(RequestInterface $request, callable $next): PromiseInterface
     {
-        $tracer = $this->getTracerWithContext($request->getHeader());
-        if ($tracer === null) {
+        $header = $request->getHeader();
+        if ($header->getValue($this->getTracerHeader(), 'array') === null || Workflow::isReplaying()) {
             return $next($request);
         }
 
+        $tracer = $this->getTracerWithContext($header);
+
         $now = ClockFactory::getDefault()->now();
         $type = Workflow::getInfo()->type;
-
 
         /** @var PromiseInterface $result */
         $result = $next($request);
@@ -49,7 +50,7 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptor implements WorkflowO
                 RequestAttribute::Type->value => $request::class,
                 RequestAttribute::Name->value => $request->getName(),
                 RequestAttribute::Id->value => $request->getID(),
-                WorkflowAttribute::Type->value => $type,
+                WorkflowAttribute::Type->value => $type->name,
             ],
             scoped: true,
             spanKind: SpanKind::KIND_SERVER,
