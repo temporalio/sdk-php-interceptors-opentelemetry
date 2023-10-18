@@ -37,15 +37,23 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptor implements WorkflowO
 
         $tracer = $this->getTracerWithContext($header);
 
-        $now = ClockFactory::getDefault()->now();
-        $type = Workflow::getInfo()->type;
-
         /** @var PromiseInterface $result */
         $result = $next($request);
 
-        $trace = static fn(): mixed => $tracer->trace(
+        return $result->then(
+            fn(mixed $value): mixed => $this->trace($tracer, $request, static fn(): mixed => $value),
+            fn(\Throwable $error): mixed => $this->trace($tracer, $request, static fn(): mixed => throw $error),
+        );
+    }
+
+    private function trace(Tracer $tracer, RequestInterface $request, \Closure $handler): mixed
+    {
+        $now = ClockFactory::getDefault()->now();
+        $type = Workflow::getInfo()->type;
+
+        return $tracer->trace(
             name: SpanName::WorkflowOutboundRequest->value . SpanName::SpanDelimiter->value . $request->getName(),
-            callback: static fn(): mixed => null,
+            callback: $handler,
             attributes: [
                 RequestAttribute::Type->value => $request::class,
                 RequestAttribute::Name->value => $request->getName(),
@@ -55,11 +63,6 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptor implements WorkflowO
             scoped: true,
             spanKind: SpanKind::KIND_SERVER,
             startTime: $now,
-        );
-
-        return $result->then(
-            onFulfilled: $trace,
-            onRejected: $trace,
         );
     }
 }
