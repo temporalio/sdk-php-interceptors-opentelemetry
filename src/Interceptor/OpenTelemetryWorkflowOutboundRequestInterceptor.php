@@ -42,10 +42,15 @@ final class OpenTelemetryWorkflowOutboundRequestInterceptor implements WorkflowO
 
         return $result->then(
             fn(mixed $value): mixed => $this->trace($tracer, $request, static fn(): mixed => $value),
-            fn(\Throwable $error): mixed => $this->trace($tracer, $request, static fn(): mixed => throw $error),
+            fn(\Throwable $error): mixed => $this->trace($tracer, $request, static function () use ($error): never {
+                throw $error;
+            }),
         );
     }
 
+    /**
+     * @throws \Throwable
+     */
     private function trace(Tracer $tracer, RequestInterface $request, \Closure $handler): mixed
     {
         $now = ClockFactory::getDefault()->now();
