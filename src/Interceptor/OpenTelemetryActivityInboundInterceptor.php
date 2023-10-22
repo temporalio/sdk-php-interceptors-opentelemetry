@@ -19,18 +19,13 @@ final class OpenTelemetryActivityInboundInterceptor implements ActivityInboundIn
     use ActivityInboundInterceptorTrait, TracerContext;
 
     public function __construct(
-        private readonly Tracer $tracer
+        private readonly Tracer $tracer,
     ) {
     }
 
-    /**
-     * @throws \Throwable
-     */
     public function handleActivityInbound(ActivityInput $input, callable $next): mixed
     {
-        $tracer = $this->getTracerWithContext($input->header);
-
-        return $tracer->trace(
+        return $this->getTracerWithContext($input->header)->trace(
             name: SpanName::ActivityHandle->value,
             callback: static fn(): mixed => $next($input),
             attributes: [
