@@ -187,8 +187,6 @@ final class Tracer
     }
 
     /**
-     *
-     *
      * {@see ApplicationFailure} could be thrown from userland
      * As well as it could come from the Temporal SDK itself
      */
