@@ -8,7 +8,7 @@ name: phpunit
 
 jobs:
     phpunit:
-        uses: spiral/gh-actions/.github/workflows/phpunit.yml@master
+        uses: spiral/gh-actions/.github/workflows/phpunit.yml@e966c298913edde0d254c9afdbb07a7f4f3d3acc # master
         with:
             os: >-
                 ['ubuntu-latest']
